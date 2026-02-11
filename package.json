@@ -1,0 +1,26 @@
+{
+  "name": "ra-dataprovider-middleware",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "test": "vitest",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.17.23",
+    "lodash": "^4.17.23",
+    "ra-data-fakerest": "^5.14.1",
+    "typescript": "~5.8.3",
+    "vite": "^7.3.1"
+  },
+  "peerDependencies": {
+    "ra-core": "^5.11.2"
+  },
+  "dependencies": {
+    "type-fest": "^5.4.4",
+    "vitest": "^3.2.4"
+  }
+}
