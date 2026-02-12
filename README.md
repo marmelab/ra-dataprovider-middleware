@@ -11,25 +11,27 @@ npm install ra-dataprovider-middleware
 ## Usage
 
 This package exports a single `applyMiddlewares` method that takes a [dataProvider]() and an object that defines middlewares for each of the dataProvider methods:
-
 ```ts
 import { dataProvider } from './dataProvider';
-import { applyMiddlewares, type DataProviderMethodMiddleware } from 'ra-dataprovider-middleware';
+import {
+  applyMiddlewares,
+  type DataProviderMethodMiddleware,
+} from 'ra-dataprovider-middleware';
 
-const auditLogMiddleware: DataProviderMethodMiddleware<typeof baseDataProvider, "update"> = (
-  next,
-  resource,
-  params,
-) => {
-  const updateParams = params as UpdateParams;
+const auditLogMiddleware: DataProviderMethodMiddleware<
+  typeof dataProvider,
+  'update'
+> = (next, resource, params) => {
   return next(resource, {
-    ...updateParams,
+    ...params,
     data: {
-      ...updateParams.data,
+      ...params.data,
       updatedAt: new Date().toISOString(),
     },
   });
 };
 
-const dataProviderWithMiddlewares = applyMiddlewares(dataProvider, { update: [auditLogMiddleware] });
+const dataProviderWithMiddlewares = applyMiddlewares(dataProvider, {
+  update: [auditLogMiddleware],
+});
 ```

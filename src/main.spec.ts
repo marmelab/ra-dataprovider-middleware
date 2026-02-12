@@ -2,7 +2,11 @@ import { describe, expect, test, vi } from "vitest";
 import fakerestDataProvider from "ra-data-fakerest";
 import type { DataProvider } from "ra-core";
 import isEqual from "lodash/isEqual";
-import { applyMiddlewares, type DataProviderMethodMiddleware, type DataProviderMethods } from "./main";
+import {
+  applyMiddlewares,
+  type DataProviderMethodMiddleware,
+  type DataProviderMethods,
+} from "./main";
 
 describe("withMiddlewares", () => {
   const baseDataProvider = fakerestDataProvider(
@@ -20,7 +24,10 @@ describe("withMiddlewares", () => {
   );
 
   const loggingMiddleware =
-    <DataProviderType extends DataProvider, Method extends DataProviderMethods<DataProviderType>>(
+    <
+      DataProviderType extends DataProvider,
+      Method extends DataProviderMethods<DataProviderType>,
+    >(
       _dataProvider: DataProviderType,
       method: Method,
     ): DataProviderMethodMiddleware<DataProviderType, Method> =>
@@ -29,11 +36,10 @@ describe("withMiddlewares", () => {
       next(...args);
     };
 
-  const dontUpdateMainResourceMiddleware: DataProviderMethodMiddleware<typeof baseDataProvider, "update"> = (
-    next,
-    resource,
-    params,
-  ) => {
+  const dontUpdateMainResourceMiddleware: DataProviderMethodMiddleware<
+    typeof baseDataProvider,
+    "update"
+  > = (next, resource, params) => {
     if (resource !== "posts") {
       return next(resource, params);
     }
@@ -44,11 +50,10 @@ describe("withMiddlewares", () => {
     return next(resource, params);
   };
 
-  const auditLogMiddleware: DataProviderMethodMiddleware<typeof baseDataProvider, "update"> = (
-    next,
-    resource,
-    params,
-  ) => {
+  const auditLogMiddleware: DataProviderMethodMiddleware<
+    typeof baseDataProvider,
+    "update"
+  > = (next, resource, params) => {
     return next(resource, {
       ...params,
       data: {
@@ -60,7 +65,9 @@ describe("withMiddlewares", () => {
 
   test("should call the middlewares", async () => {
     using _fakeConsole = createConsoleInterceptor();
-    const loggingMiddlewareSpy = vi.fn(loggingMiddleware(baseDataProvider, "getList"));
+    const loggingMiddlewareSpy = vi.fn(
+      loggingMiddleware(baseDataProvider, "getList"),
+    );
 
     const dataProvider = applyMiddlewares(baseDataProvider, {
       getList: [loggingMiddlewareSpy, loggingMiddlewareSpy],
@@ -72,11 +79,15 @@ describe("withMiddlewares", () => {
       filter: {},
     });
     expect(loggingMiddlewareSpy).toHaveBeenCalledTimes(2);
-    expect(loggingMiddlewareSpy).toHaveBeenCalledWith(expect.any(Function), "posts", {
-      pagination: { page: 1, perPage: 10 },
-      sort: { field: "id", order: "ASC" },
-      filter: {},
-    });
+    expect(loggingMiddlewareSpy).toHaveBeenCalledWith(
+      expect.any(Function),
+      "posts",
+      {
+        pagination: { page: 1, perPage: 10 },
+        sort: { field: "id", order: "ASC" },
+        filter: {},
+      },
+    );
   });
 
   test("should allow to bypass the dataProvider method", () => {
@@ -128,13 +139,17 @@ describe("withMiddlewares", () => {
 
   test("should call the middlewares for custom methods", () => {
     using _fakeConsole = createConsoleInterceptor();
-    const loggingMiddlewareSpy = vi.fn(loggingMiddleware(dataProviderWithCustomMethod, "customMethod"));
+    const loggingMiddlewareSpy = vi.fn(
+      loggingMiddleware(dataProviderWithCustomMethod, "customMethod"),
+    );
     const dataProvider = applyMiddlewares(dataProviderWithCustomMethod, {
       customMethod: [loggingMiddlewareSpy, loggingMiddlewareSpy],
     });
     dataProvider.customMethod({ value: true });
     expect(loggingMiddlewareSpy).toHaveBeenCalledTimes(2);
-    expect(loggingMiddlewareSpy).toHaveBeenCalledWith(expect.any(Function), { value: true });
+    expect(loggingMiddlewareSpy).toHaveBeenCalledWith(expect.any(Function), {
+      value: true,
+    });
   });
 });
 
